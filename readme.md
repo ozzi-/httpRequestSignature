@@ -1,4 +1,13 @@
+# Singing HTTP requests
+This is a demonstration on how HTTP(s) requests can be signed.
+The key material is creating using Curve25519 (https://en.wikipedia.org/wiki/Curve25519).
 
+The following steps are required to create and validate the signed request:
+![flow](https://i.imgur.com/rUNnuXP.png)
+
+**Note:** This demo does not cover the public key transfer to the server
+
+## Example Output of the Demo Code
 ```
 1 - requestJSON
 ***************
