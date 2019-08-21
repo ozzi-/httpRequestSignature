@@ -1,3 +1,4 @@
+package crypto;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.MessageDigest;
@@ -10,6 +11,7 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.util.ArrayList;
 
+import Util.NonceTimestampTuple;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.KeyPairGenerator;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;

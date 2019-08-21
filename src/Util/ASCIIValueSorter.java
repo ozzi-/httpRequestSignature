@@ -1,3 +1,4 @@
+package Util;
 import java.util.Comparator;
 
 /**
@@ -10,7 +11,6 @@ import java.util.Comparator;
  * [_est, aest, test, tESt, TesT, test12, test1, test2, test3, }est]
  *
  * Note: All strings will be treated as lower case.
- * @author ozgheb1
  */
 public class ASCIIValueSorter implements Comparator<String> {
 	@Override

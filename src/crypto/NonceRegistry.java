@@ -1,5 +1,8 @@
+package crypto;
 import java.util.HashSet;
 import java.util.Iterator;
+
+import Util.NonceTimestampTuple;
 
 public class NonceRegistry {
 	private static HashSet<NonceTimestampTuple> nonces = new HashSet<NonceTimestampTuple>();

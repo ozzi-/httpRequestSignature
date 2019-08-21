@@ -1,9 +1,12 @@
+package Util;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Set;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import crypto.Crypto;
 
 public class StringUtils {
 	
