@@ -1,4 +1,9 @@
+# Singing HTTP requests
+This is a demonstration on how HTTP(s) requests can be signed.
+The key material is creating using Curve25519 (https://en.wikipedia.org/wiki/Curve25519).
 
+
+## Example Output of the Demo Code
 ```
 1 - requestJSON
 ***************
