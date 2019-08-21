@@ -54,7 +54,7 @@ public class HTTPSignatureDemo {
         
         // 7 - Validate the signature and requestJSONServer using the public key of the client
         byte[] clientSignatureFromHeader = StringUtils.getSignatureBA(clientSignatureAndMetaDataJSON);
-        NonceTimestampTuple signatureNonce = StringUtils.getNonce(serverCreatedClientJSON);
+        NonceTimestampTuple signatureNonce = StringUtils.getNonceTuple(serverCreatedClientJSON);
         boolean success = Crypto.validateSignature(pubKey, serverCreatedClientJSON, clientSignatureFromHeader, signatureNonce);
         
         // 8 - Validating the same signature again should throw an exception due to the nonce being reused within the validity/lifetime of the signature

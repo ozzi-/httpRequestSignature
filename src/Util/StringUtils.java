@@ -18,9 +18,9 @@ public class StringUtils {
 		return Base64.getDecoder().decode(signature);
 	}
 	
-	public static NonceTimestampTuple getNonce(String signatureString) {
+	public static NonceTimestampTuple getNonceTuple(String signatureString) {
 		JsonObject signatureJO = gson.parse(signatureString).getAsJsonObject();
-		return new NonceTimestampTuple(System.currentTimeMillis() / 1000L,signatureJO.get("__nonce__").getAsString());
+		return new NonceTimestampTuple(signatureJO.get("__timestamp__").getAsLong(),signatureJO.get("__nonce__").getAsString());
 	}
 	
 	public static String createJSONForSignatureCheck(String signatureString, String uri, String method, String body) throws Exception {

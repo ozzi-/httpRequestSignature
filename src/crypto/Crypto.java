@@ -18,7 +18,10 @@ import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 
 public class Crypto {
-	
+	/**
+	 * How long in seconds a signature is valid.
+	 * The nonce cannot be reused for lifetime + 1s 
+	 */
 	public static final int lifetime = 60;
 	/**
 	 * Generates a public/private EdDSA key pair
