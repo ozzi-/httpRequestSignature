@@ -1,4 +1,4 @@
-# Singing HTTP requests
+# Siging HTTP requests
 This is a demonstration on how HTTP(s) requests can be signed.
 The key material is creating using Curve25519 (https://en.wikipedia.org/wiki/Curve25519).
 
