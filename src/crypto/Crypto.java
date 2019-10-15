@@ -1,21 +1,24 @@
 package crypto;
 import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.Signature;
+import java.security.Security;
 import java.security.SignatureException;
 import java.util.ArrayList;
 
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.CryptoException;
+import org.bouncycastle.crypto.DataLengthException;
+import org.bouncycastle.crypto.Signer;
+import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator;
+import org.bouncycastle.crypto.params.Ed25519KeyGenerationParameters;
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
+import org.bouncycastle.crypto.signers.Ed25519Signer;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import Util.NonceTimestampTuple;
-import net.i2p.crypto.eddsa.EdDSAEngine;
-import net.i2p.crypto.eddsa.KeyPairGenerator;
-import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
-import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 
 public class Crypto {
 	/**
@@ -27,19 +30,18 @@ public class Crypto {
 	 * Generates a public/private EdDSA key pair
 	 * @return
 	 */
-	public static KeyPair generateKeyPair() {
-		KeyPairGenerator generator = new KeyPairGenerator();
-		SecureRandom sr;
-		try {
-			sr = SecureRandom.getInstance("SHA1PRNG", "SUN");
-			generator.initialize(256, sr);
-		} catch (NoSuchAlgorithmException | NoSuchProviderException e) {
-			System.err.println("Could not create secure random generator");
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return generator.generateKeyPair();
+	
+	public static KeyEd25519Pair generateKeyPair() {
+        Security.addProvider(new BouncyCastleProvider());
+        SecureRandom RANDOM = new SecureRandom();
+        Ed25519KeyPairGenerator keyPairGenerator = new Ed25519KeyPairGenerator();
+        keyPairGenerator.init(new Ed25519KeyGenerationParameters(RANDOM));
+        AsymmetricCipherKeyPair asymmetricCipherKeyPair = keyPairGenerator.generateKeyPair();
+        Ed25519PrivateKeyParameters privateKey = (Ed25519PrivateKeyParameters) asymmetricCipherKeyPair.getPrivate();
+        Ed25519PublicKeyParameters publicKey = (Ed25519PublicKeyParameters) asymmetricCipherKeyPair.getPublic();
+        return new KeyEd25519Pair(publicKey, privateKey);
 	}
+	
 	/**
 	 * Generates a random string of a specified length for the allowed chars passed
 	 * @param length
@@ -63,21 +65,20 @@ public class Crypto {
 	
 	/**
 	 * Creates a ED_25519 signature for jsonCanonicalized with the private key
-	 * @param privKey
+	 * @param privateKey
 	 * @param jsonCanonicalized
 	 * @return
+	 * @throws CryptoException 
+	 * @throws DataLengthException 
 	 * @throws Exception
 	 */
-	public static byte[] sign(PrivateKey privKey, String jsonCanonicalized) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-		EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519);
-        Signature signature = new EdDSAEngine(MessageDigest.getInstance(spec.getHashAlgorithm()));
-        signature.initSign(privKey);
-        // not sure about this first empty run, took it from:
-        // https://github.com/str4d/ed25519-java/blob/master/test/net/i2p/crypto/eddsa/EdDSAEngineTest.java
-        signature.update(new byte[] {0});
-        signature.sign();
-        signature.update(jsonCanonicalized.getBytes());       
-        return signature.sign();
+	public static byte[] sign(Ed25519PrivateKeyParameters privateKey, String jsonCanonicalized) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, DataLengthException, CryptoException {
+		byte[] message = jsonCanonicalized.getBytes();
+        Signer signer = new Ed25519Signer();
+        signer.init(true, privateKey);
+        signer.update(message, 0, message.length);
+        byte[] signature = signer.generateSignature();
+        return signature;
 	}
 	
 	/**
@@ -90,14 +91,17 @@ public class Crypto {
 	 * @return
 	 * @throws Exception
 	 */
-	public static boolean validateSignature(PublicKey publicKey, String json, byte[] signatureBA, NonceTimestampTuple nonce) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-		EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519);
-		Signature sign = new EdDSAEngine(MessageDigest.getInstance(spec.getHashAlgorithm()));
-		sign.initVerify(publicKey);
-		sign.update(json.getBytes());
+	public static boolean validateSignature(Ed25519PublicKeyParameters publicKey, String json, byte[] signatureBA, NonceTimestampTuple nonce) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+		byte[] message = json.getBytes();
+
+        Signer verifier = new Ed25519Signer();
+        verifier.init(false, publicKey);
+        verifier.update(message, 0, message.length);
+        boolean verifyRes = verifier.verifySignature(signatureBA);
+		
 		if(!NonceRegistry.checkNonce(nonce, lifetime+1)) {
 			throw new SecurityException("nonce reuse detected");
 		}
-		return sign.verify(signatureBA);
+		return verifyRes;
 	}
 }
