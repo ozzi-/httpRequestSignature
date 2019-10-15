@@ -2,6 +2,8 @@
 This is a demonstration on how HTTP(s) requests can be signed.
 The key material is creating using Curve25519 (https://en.wikipedia.org/wiki/Curve25519).
 
+Note: This demo code does not show how the public keys will be transferred to and stored on the server side
+
 The following steps are required to create and validate the signed request:
 ![flow](https://i.imgur.com/UJgsZbo.png)
 
