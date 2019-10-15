@@ -3,7 +3,7 @@ This is a demonstration on how HTTP(s) requests can be signed.
 The key material is creating using Curve25519 (https://en.wikipedia.org/wiki/Curve25519).
 
 The following steps are required to create and validate the signed request:
-![flow](https://i.imgur.com/rUNnuXP.png)
+![flow](https://i.imgur.com/UJgsZbo.png)
 
 ## Example Output of the Demo Code
 ```
