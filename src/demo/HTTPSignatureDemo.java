@@ -129,7 +129,7 @@ public class HTTPSignatureDemo {
 			String headerMethod, String headerTime) {
 
 //		Example code for backend
-//      ************************
+//      	************************
 //		Base64.Decoder decoder = Base64.getDecoder();
 //		
 //		String body =  StringUtils.getToSignJSON(nonce, timestampInMilliseconds, uri, method, message);
@@ -153,6 +153,9 @@ public class HTTPSignatureDemo {
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "text/plain");
+			// assuming our test backend call allows providing the public key via header
+			// Note: don't do this on a productive environment, the public key should be transferred
+			// in a safe and authenticated manner beforehand.
 			conn.setRequestProperty("X-PUBLIC-KEY", headerPublicKey);
 			conn.setRequestProperty("X-HTTP-SIGNATURE", headerSignature);
 			conn.setRequestProperty("uri", headerUri);
